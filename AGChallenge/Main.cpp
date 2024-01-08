@@ -11,48 +11,39 @@ using namespace TimeCounters;
 
 using namespace std;
 
-#define dMAX_TIME 20 * 60
+#define MAX_TIME 20 * 60
 
 
-void vRunExperiment(CLFLnetEvaluator &cConfiguredEvaluator)
+void  runAGExperiment(CString  netName, int popSize, double crossProb, double mutProb)
 {
+	CLFLnetEvaluator evaluator;
+	evaluator.bConfigure(netName);
+	
 	try
 	{
-		CTimeCounter c_time_counter;
+		CTimeCounter timeCounter;
 
-		double d_time_passed;
+		double timePassed;
 
-		COptimizer c_optimizer(cConfiguredEvaluator);
+		CGeneticAlgorithm optimizer(evaluator, popSize, crossProb, mutProb);
 
-		c_time_counter.vSetStartNow();
+		timeCounter.vSetStartNow();
 
-		c_optimizer.vInitialize();
+		timeCounter.bGetTimePassed(&timePassed);
 
-		c_time_counter.bGetTimePassed(&d_time_passed);
-
-		while (d_time_passed <= dMAX_TIME)
+		while (timePassed <= MAX_TIME)
 		{
-			c_optimizer.vRunIteration();
-			c_optimizer.pvGetCurrentBest();
+			CIndividual bestSolution = optimizer.runIter();
+			cout << bestSolution.getFitness() << endl;
 
-			c_time_counter.bGetTimePassed(&d_time_passed);
-		}//while (d_time_passed <= MAX_TIME)
-	}//try
-	catch (exception &c_exception)
+			timeCounter.bGetTimePassed(&timePassed);
+		}
+	}
+	catch (exception &exception)
 	{
-		cout << c_exception.what() << endl;
-	}//catch (exception &c_exception)
-}//void vRunExperiment(const CEvaluator &cConfiguredEvaluator)
-
-
-
-void  vRunLFLExperiment(CString  sNetName)
-{
-	CLFLnetEvaluator c_lfl_eval;
-	c_lfl_eval.bConfigure(sNetName);
-	vRunExperiment(c_lfl_eval);
-	
-}//void vRunRastriginExperiment(int iNumberOfBits, int iBitsPerFloat, int iMaskSeed)
+		cout << exception.what() << endl;
+	}
+}
 
 void main(int iArgCount, char **ppcArgValues)
 {
@@ -62,8 +53,9 @@ void main(int iArgCount, char **ppcArgValues)
 
 
 	CString  s_test;
-	vRunLFLExperiment("104b00");
 	*/
+
+	runAGExperiment("104b00", 200, 1, 0.02);
 
 	/*vRunIsingSpinGlassExperiment(81, 0, i_mask_seed);
 	vRunIsingSpinGlassExperiment(81, 0, iSEED_NO_MASK);
@@ -83,28 +75,4 @@ void main(int iArgCount, char **ppcArgValues)
 	vRunRastriginExperiment(200, 10, i_mask_seed);
 	vRunRastriginExperiment(200, 10, iSEED_NO_MASK);*/
 
-	CLFLnetEvaluator evaluator;
-	evaluator.bConfigure("104b00");
-
-	
-	CGeneticAlgorithm AG(200, 1, 0.1);
-
-	int iterationsAmount = 1000;
-	int i = 1;
-
-	CIndividual bestSolution = AG.run(1000, evaluator);
-	cout << bestSolution.getFitness() << endl;
-
-	/*
-	while (i <= iterationsAmount)
-	{
-		CIndividual bestSolution = AG.run(i, evaluator);
-
-		cout << bestSolution.getFitness() << endl;
-
-		i++;
-	}
-	*/
-	
-
-}//void main(int iArgCount, char **ppcArgValues)
+}
