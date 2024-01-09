@@ -10,75 +10,77 @@ CGeneticAlgorithm::CGeneticAlgorithm(CLFLnetEvaluator& evaluator, int popSize, d
 
 	for (int i = 0; i < popSize; i++)
 	{
-		CIndividual* newI = new CIndividual(&evaluator);
-		population.push_back(newI);
+		population.push_back(CIndividual(&evaluator));
 	}
 
 }
 
 CIndividual& CGeneticAlgorithm::runIter()
 {
-	vector<CIndividual*> newPop;
+	vector<CIndividual> newPop;
 
 	// Crossing
 	while (newPop.size() < population.size())
 	{
-		CIndividual* r1;
-		CIndividual* r2;
+		CIndividual r1;
+		CIndividual r2;
 
-		CIndividual* parent1;
-		CIndividual* parent2;
-
-		r1 = population[rand() % popSize];
-		r2 = population[rand() % popSize];
-
-		parent1 = r1->getFitness() > r2->getFitness() ? r1 : r2;
+		CIndividual parent1;
+		CIndividual parent2;
 
 		r1 = population[rand() % popSize];
 		r2 = population[rand() % popSize];
 
-		parent2 = r1->getFitness() > r2->getFitness() ? r1 : r2;
+		parent1 = r1.getFitness() > r2.getFitness() ? r1 : r2;
 
-		if (parent1 == parent2)
+		r1 = population[rand() % popSize];
+		r2 = population[rand() % popSize];
+
+		parent2 = r1.getFitness() > r2.getFitness() ? r1 : r2;
+
+		if (&parent1 == &parent2)
 		{
-			if (parent2 == r1)
+			if (&parent2 == &r1)
 				parent2 = r2;
 			else
 				parent2 = r1;
 		}
 
 		// Should cross ?
-		if (static_cast<float>(rand()) / RAND_MAX < crossProb)
+		if (static_cast<float>(rand()) / RAND_MAX <= crossProb)
 		{
-			vector<CIndividual*> crossoverResult = parent1->crossover(*parent2);
+			vector<CIndividual> crossoverResult = parent1.crossover(parent2);
 
 			newPop.insert(newPop.end(), crossoverResult.begin(), crossoverResult.end());
-
 		}
 		else
 		{
-			newPop.push_back(parent1);
-			newPop.push_back(parent2);
+			newPop.push_back(CIndividual(parent1));
+			newPop.push_back(CIndividual(parent2));
 		}
 	}
 
 	if (newPop.size() > population.size())
 		newPop.pop_back();
 
+	
 	population = newPop;
 
+
 	// Mutating
-	for (auto el : population)
+	
+	for (auto &el : population)
 	{
-		el->mutate(mutProb);
+		el.mutate(mutProb);
 	}
+	
 
 	auto bestSolution = max_element(population.begin(), population.end(),
-		[](CIndividual* a, CIndividual* b) 
+		[](CIndividual a, CIndividual b) 
 		{
-			return a->getFitness() < b->getFitness();
+			return a.getFitness() < b.getFitness();
 		}
 	);
 
-	return **bestSolution;
+	return *bestSolution;
 }

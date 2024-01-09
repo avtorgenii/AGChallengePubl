@@ -16,7 +16,6 @@ private:
 	int popSize;
 	double crossProb;
 	double mutProb;
-
-	vector<CIndividual*> population;
+	vector<CIndividual> population;
 };
 

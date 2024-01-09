@@ -74,5 +74,4 @@ void main(int iArgCount, char **ppcArgValues)
 
 	vRunRastriginExperiment(200, 10, i_mask_seed);
 	vRunRastriginExperiment(200, 10, iSEED_NO_MASK);*/
-
 }

@@ -1,7 +1,10 @@
 #include "CIndividual.h"
-#include <cstdlib>
 
-CIndividual::CIndividual()
+CIndividual::CIndividual() : evaluator(nullptr)
+{
+}
+
+CIndividual::CIndividual(const CIndividual& other) : genotype(other.genotype), evaluator(other.evaluator)
 {
 }
 
@@ -25,27 +28,27 @@ void CIndividual::mutate(double mutProb)
 	}
 }
 
-vector<CIndividual*> CIndividual::crossover(const CIndividual& other) const 
+vector<CIndividual> CIndividual::crossover(const CIndividual& other) const 
 {
 	int crossIndex = (rand() % (GENOTYPELEN - 1)) + 1;
 
-	CIndividual* child1 = new CIndividual();
-	CIndividual* child2 = new CIndividual();
+	CIndividual child1;
+	CIndividual child2;
 
-	for (int i = 0; i < crossIndex; i++) 
+	for (int i = 0; i < crossIndex; i++)
 	{
-		child1->genotype.push_back(genotype[i]);
-		child2->genotype.push_back(other.genotype[i]);
+		child1.genotype.push_back(genotype[i]);
+		child2.genotype.push_back(other.genotype[i]);
 	}
 
 	for (int i = crossIndex; i < GENOTYPELEN; i++)
 	{
-		child1->genotype.push_back(other.genotype[i]);
-		child2->genotype.push_back(genotype[i]);
+		child1.genotype.push_back(other.genotype[i]);
+		child2.genotype.push_back(genotype[i]);
 	}
 
-	child1->evaluator = evaluator;
-	child2->evaluator = evaluator;
+	child1.evaluator = evaluator;
+	child2.evaluator = evaluator;
 
 	return { child1, child2 };
 }
@@ -58,4 +61,16 @@ vector<int>& CIndividual::getGenotype()
 double CIndividual::getFitness()
 {
 	return evaluator->dEvaluate(&genotype);
+}
+
+string CIndividual::toString()
+{
+	string res = "";
+
+	for (auto el : genotype) 
+	{
+		res += to_string(el);
+	}
+
+	return res;
 }
