@@ -53,6 +53,30 @@ vector<CIndividual> CIndividual::crossover(const CIndividual& other) const
 	return { child1, child2 };
 }
 
+CIndividual CIndividual::newCrossover(const CIndividual & other1, const CIndividual & other2) const
+{
+	CIndividual res(*this);
+
+	vector<int> indices;
+	vector<int> gens;
+
+	for (unsigned int i = 0; i < other1.genotype.size(); i++) 
+	{
+		if (other1.genotype[i] == other2.genotype[i]) 
+		{
+			indices.push_back(i);
+			gens.push_back(other1.genotype[i]);
+		}
+	}
+
+	for (unsigned int i = 0;i < indices.size();i++) 
+	{
+		res.genotype[indices[i]] = gens[i];
+	}
+
+	return res;
+}
+
 vector<int>& CIndividual::getGenotype()
 {
 	return genotype;

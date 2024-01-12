@@ -3,6 +3,7 @@
 #include <vector>
 #include "Evaluator.h"
 #include <string>
+
 #define MAXVAL 3
 #define GENOTYPELEN 2500
 
@@ -18,6 +19,7 @@ public:
 	void mutate(double mutProb);
 
 	vector<CIndividual> crossover(const CIndividual& other) const;
+	CIndividual newCrossover(const CIndividual& other1, const CIndividual& other2) const;
 
 	vector<int>& getGenotype();
 

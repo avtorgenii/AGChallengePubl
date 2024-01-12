@@ -25,43 +25,66 @@ CIndividual& CGeneticAlgorithm::runIter()
 		CIndividual r1;
 		CIndividual r2;
 
-		CIndividual parent1;
-		CIndividual parent2;
-
-		r1 = population[rand() % popSize];
-		r2 = population[rand() % popSize];
-
-		parent1 = r1.getFitness() > r2.getFitness() ? r1 : r2;
-
-		r1 = population[rand() % popSize];
-		r2 = population[rand() % popSize];
-
-		parent2 = r1.getFitness() > r2.getFitness() ? r1 : r2;
-
-		if (&parent1 == &parent2)
-		{
-			if (&parent2 == &r1)
-				parent2 = r2;
-			else
-				parent2 = r1;
-		}
+		//vector<CIndividual> parents;
 
 		// Should cross ?
 		if (static_cast<float>(rand()) / RAND_MAX <= crossProb)
 		{
-			vector<CIndividual> crossoverResult = parent1.crossover(parent2);
+			vector<CIndividual> parents;
+			CIndividual temp;
 
-			newPop.insert(newPop.end(), crossoverResult.begin(), crossoverResult.end());
+			while (parents.size() != PARENTSCOUNT) 
+			{
+				r1 = population[rand() % popSize];
+				r2 = population[rand() % popSize];
+
+				temp = r1.getFitness() > r2.getFitness() ? r1 : r2;
+
+				if (!contains(parents, &temp))
+				{
+					parents.push_back(temp);
+				}
+			}
+
+			//vector<CIndividual> crossoverResult = parents[0].crossover(parents[1]);
+			//newPop.insert(newPop.end(), crossoverResult.begin(), crossoverResult.end());
+
+			CIndividual crossoverResult = parents[0].newCrossover(parents[1], parents[2]);
+
+			newPop.push_back(crossoverResult);
 		}
 		else
 		{
+			/*
+			CIndividual temp;
+
+			while (parents.size() != PARENTSCOUNT)
+			{
+				r1 = population[rand() % popSize];
+				r2 = population[rand() % popSize];
+
+				temp = r1.getFitness() > r2.getFitness() ? r1 : r2;
+
+				if (!contains(parents, &temp))
+				{
+					parents.push_back(temp);
+				}
+			}
+			*/
+
+			r1 = population[rand() % popSize];
+			r2 = population[rand() % popSize];
+
+			CIndividual parent1 = r1.getFitness() > r2.getFitness() ? r1 : r2;
+
 			newPop.push_back(CIndividual(parent1));
-			newPop.push_back(CIndividual(parent2));
 		}
 	}
 
+	/*
 	if (newPop.size() > population.size())
 		newPop.pop_back();
+	*/
 
 	
 	population = newPop;
@@ -83,4 +106,15 @@ CIndividual& CGeneticAlgorithm::runIter()
 	);
 
 	return *bestSolution;
+}
+
+bool CGeneticAlgorithm::contains(vector<CIndividual>& vec, CIndividual * elem)
+{
+	for (auto el : vec) 
+	{
+		if (&el == elem)
+			return true;
+	}
+
+	return false;
 }
